@@ -45,8 +45,6 @@
 
 }
 
-.login_box{ 
-}
 
 .form{
     background-color: #f0f2f5;
@@ -235,7 +233,7 @@
     font-weight: 600;
     margin-top: 16px;
 }
-.new_account_btn a {
+.new_account_btn{
     text-decoration: none;
     color: #fff;
 }
@@ -244,4 +242,14 @@
     font-size: 17px;
     line-height: 20px;
     margin-top: 15px;
+}
+
+.btn_login{
+    border: none;
+    outline: none;
+    background-color: none;
+}
+
+#log_out{
+    display: flex;
 }
