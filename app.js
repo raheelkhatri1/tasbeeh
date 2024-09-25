@@ -23,14 +23,24 @@ var alhamdulillah = 0
 var kalmaShareef = 0
 var duroodePak = 0
 var active_tasbeeh = ""
+var userid = localStorage.getItem("uid")
+
 
 function dashborad() {
+    var all_tasbbeh = {
+        subhanallah,
+        alhamdulillah,
+        kalmaShareef,
+        duroodePak,
+    }
+
     var dashborad_section = document.getElementById("dashborad_section")
     var tasbeeh_section = document.getElementById("tasbeeh_section")
     var login_section = document.getElementById("login_section")
     tasbeeh_section.classList.add("d-none")
     dashborad_section.classList.remove("d-none")
     login_section.classList.add("d-none")
+    
 }
 
 function tasbeeh(tasbeehp) {
@@ -62,28 +72,28 @@ function plus_minus(e) {
         if (active_tasbeeh == "subhanallah") {
             subhanallah++;
             tasbeeh_count.innerHTML = subhanallah;
-        }if (active_tasbeeh == "alhamdulillah") {
+        } if (active_tasbeeh == "alhamdulillah") {
             alhamdulillah++
             tasbeeh_count.innerHTML = alhamdulillah;
-        }if(active_tasbeeh == "kalmaShareef"){
+        } if (active_tasbeeh == "kalmaShareef") {
             kalmaShareef++
             tasbeeh_count.innerHTML = kalmaShareef;
-        }if(active_tasbeeh == "duroodePak"){
+        } if (active_tasbeeh == "duroodePak") {
             duroodePak++
             tasbeeh_count.innerHTML = duroodePak;
         }
-    }else{
-        if(tasbeeh_count.innerHTML > 0){
-            if(active_tasbeeh == "subhanallah"){
+    } else {
+        if (tasbeeh_count.innerHTML > 0) {
+            if (active_tasbeeh == "subhanallah") {
                 subhanallah--
                 tasbeeh_count.innerHTML = subhanallah;
-            }if(active_tasbeeh == "alhamdulillah"){
+            } if (active_tasbeeh == "alhamdulillah") {
                 alhamdulillah--
                 tasbeeh_count.innerHTML = alhamdulillah;
-            }if(active_tasbeeh == "kalmaShareef"){
+            } if (active_tasbeeh == "kalmaShareef") {
                 kalmaShareef--
                 tasbeeh_count.innerHTML = kalmaShareef;
-            }if(active_tasbeeh == "duroodePak"){
+            } if (active_tasbeeh == "duroodePak") {
                 duroodePak--
                 tasbeeh_count.innerHTML = duroodePak;
             }
@@ -91,13 +101,6 @@ function plus_minus(e) {
     }
 }
 
-function minus() {
-    var tasbeeh_count = document.getElementById("tasbeeh_conting")
-    tasbeeh_count.innerHTML--
-    if (tasbeeh_count.innerHTML <= 0) {
-        tasbeeh_count.innerHTML = 0
-    }
-}
 
 function login() {
     var dashborad_section = document.getElementById("dashborad_section")
@@ -173,39 +176,8 @@ function login_account() {
             var user = userCredential.user;
             // ...
             console.log("yes", user)
+            localStorage.setItem("uid", user.uid)
 
-            db.collection("users").where("uid", "==", user.uid)
-                .get()
-                .then((querySnapshot) => {
-                    querySnapshot.forEach((doc) => {
-                        // doc.data() is never undefined for query doc snapshots
-                        console.log(doc.id, " => ", doc.data().first);
-
-                        var data_login_f = document.createTextNode(doc.data().first)
-                        var data_login_l = document.createTextNode(doc.data().last)
-                        log_out.classList.remove("d-none")
-
-
-                        var log_out_btn = document.getElementById("log_out_btn")
-                        var log_out_first = document.getElementById("log_out_first")
-                        var log_out_last = document.getElementById("log_out_last")
-
-                        var login_section_block = document.getElementById("login_section_block")
-                        var sign_up_section = document.getElementById("sign_up_section")
-                        login_section_block.classList.add("d-none")
-                        sign_up_section.classList.add("d-none")
-
-                        log_out_first.innerHTML = ""
-                        log_out_last.innerHTML = ""
-                        log_out_btn.innerHTML = "Log Out"
-
-                        log_out_first.appendChild(data_login_f)
-                        log_out_last.appendChild(data_login_l)
-                    });
-                })
-                .catch((error) => {
-                    console.log("Error getting documents: ", error);
-                });
 
         })
         .catch((error) => {
@@ -214,7 +186,83 @@ function login_account() {
         });
 }
 
-function save() {
 
+function reload() {
+    db.collection("users").where("uid", "==", userid)
+        .get()
+        .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                // doc.data() is never undefined for query doc snapshots
+                console.log(doc.id, " => ", doc.data().first);
+
+                var data_login_f = document.createTextNode(doc.data().first)
+                var data_login_l = document.createTextNode(doc.data().last)
+                log_out.classList.remove("d-none")
+
+
+                var log_out_btn = document.getElementById("log_out_btn")
+                var log_out_first = document.getElementById("log_out_first")
+                var log_out_last = document.getElementById("log_out_last")
+
+                var dashborad_section = document.getElementById("dashborad_section")
+                var login_section_block = document.getElementById("login_section_block")
+                var sign_up_section = document.getElementById("sign_up_section")
+                login_section_block.classList.add("d-none")
+                dashborad_section.classList.remove("d-none")
+
+                sign_up_section.classList.add("d-none")
+
+                log_out_first.innerHTML = ""
+                log_out_last.innerHTML = ""
+                log_out_btn.innerHTML = "Log Out"
+
+                log_out_first.appendChild(data_login_f)
+                log_out_last.appendChild(data_login_l)
+
+            });
+        })
+        .catch((error) => {
+            console.log("Error getting documents: ", error);
+        });
 }
-
+reload()
+function save() {
+    var all_tasbbeh = {
+        subhanallah,
+        alhamdulillah,
+        kalmaShareef,
+        duroodePak,
+    };
+    Object.keys(all_tasbbeh).map((key) => {
+        db.collection(key)
+            .where("uid", "==", userid)
+            .get()
+            .then((res) => {
+                if (res.empty) {
+                    // Add a new entry if none exists
+                    db.collection(key)
+                        .add({
+                            count: all_tasbbeh[key],
+                            uid: userid,
+                        })
+                        .then((doc) => {
+                            console.log(`${key} count saved with ID: `, doc.id);
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                        });
+                } else {
+                    // Update the existing entry
+                    res.forEach((doc) => {
+                        db.collection(key).doc(doc.id).set({
+                            count: all_tasbbeh[key],
+                            uid: userid,
+                        });
+                    });
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    });
+}
