@@ -27,12 +27,12 @@ var userid = localStorage.getItem("uid")
 
 
 function dashborad() {
-    var all_tasbbeh = {
-        subhanallah,
-        alhamdulillah,
-        kalmaShareef,
-        duroodePak,
-    }
+    // var all_tasbbeh = {
+    //     subhanallah,
+    //     alhamdulillah,
+    //     kalmaShareef,
+    //     duroodePak,
+    // }
 
     var dashborad_section = document.getElementById("dashborad_section")
     var tasbeeh_section = document.getElementById("tasbeeh_section")
@@ -40,7 +40,16 @@ function dashborad() {
     tasbeeh_section.classList.add("d-none")
     dashborad_section.classList.remove("d-none")
     login_section.classList.add("d-none")
-    
+     
+    var subhanallah_id = document.getElementById("subhanallahCount")
+    var alhamdulillah_id = document.getElementById("alhamdulillahCount")
+    var kalmaShareef_id = document.getElementById("kalmaShareefCount")
+    var duroodePak_id = document.getElementById("duroodePakCount")
+
+    subhanallah_id.innerHTML = subhanallah
+    alhamdulillah_id.innerHTML = alhamdulillah
+    kalmaShareef_id.innerHTML = kalmaShareef
+    duroodePak_id.innerHTML = duroodePak
 }
 
 function tasbeeh(tasbeehp) {
@@ -194,36 +203,60 @@ function reload() {
             querySnapshot.forEach((doc) => {
                 // doc.data() is never undefined for query doc snapshots
                 console.log(doc.id, " => ", doc.data().first);
-
-                var data_login_f = document.createTextNode(doc.data().first)
-                var data_login_l = document.createTextNode(doc.data().last)
+                
+                var log_out_first = document.getElementById("log_out_first")
+                var data_login_f = doc.data().first
+                var data_login_l = doc.data().last
                 log_out.classList.remove("d-none")
+                log_out_first.innerHTML=data_login_f+" "+data_login_l
 
 
                 var log_out_btn = document.getElementById("log_out_btn")
-                var log_out_first = document.getElementById("log_out_first")
-                var log_out_last = document.getElementById("log_out_last")
 
                 var dashborad_section = document.getElementById("dashborad_section")
                 var login_section_block = document.getElementById("login_section_block")
                 var sign_up_section = document.getElementById("sign_up_section")
                 login_section_block.classList.add("d-none")
                 dashborad_section.classList.remove("d-none")
-
                 sign_up_section.classList.add("d-none")
 
-                log_out_first.innerHTML = ""
-                log_out_last.innerHTML = ""
+                // log_out_first.innerHTML = ""
+                // log_out_last.innerHTML = ""
                 log_out_btn.innerHTML = "Log Out"
 
-                log_out_first.appendChild(data_login_f)
-                log_out_last.appendChild(data_login_l)
+                // log_out_first.appendChild(data_login_f)
+                // log_out_last.appendChild(data_login_l)
+                var all_tasbbeh = {
+                    subhanallah,
+                    alhamdulillah,
+                    kalmaShareef,
+                    duroodePak,
+                };
+                Object.keys(all_tasbbeh).map((key) => {
+                    db.collection(key)
+                        .where("uid", "==", userid)
+                        .get()
+                        .then((res) => {
+                            res.forEach((doc) => {
+                               all_tasbbeh[key] = doc.data().count
+                            })
+                            subhanallah=all_tasbbeh.subhanallah
+                            alhamdulillah=all_tasbbeh.alhamdulillah
+                            kalmaShareef=all_tasbbeh.kalmaShareef
+                            duroodePak=all_tasbbeh.duroodePak
+                            dashborad()
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                });
 
             });
         })
         .catch((error) => {
             console.log("Error getting documents: ", error);
         });
+        
 }
 reload()
 function save() {
@@ -260,6 +293,7 @@ function save() {
                         });
                     });
                 }
+                
             })
             .catch((error) => {
                 console.log(error);
